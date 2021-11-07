@@ -111,7 +111,7 @@ def update_leaderboard(score):
     print(f'Finished. Final score {score}.')
     name = input('Enter your name to save in leaderboard: ')
     with open(esh, 'a') as file:
-        file.write(f"{name:<20}:\t\t{score}\n")
+        file.write(f"{name}:\t\t{score}\n")
 
 pygame.init()
 
@@ -133,7 +133,8 @@ score = 0
 penalty = 3
 
 frames = 0
-while frames <= 25 * FPS and not gameover:
+TIME_LENGTH = 85
+while frames <= TIME_LENGTH * FPS and not gameover:
     frames += 1
     clock.tick(FPS)
     for ball in ballz:
