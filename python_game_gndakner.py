@@ -19,8 +19,12 @@ class Ball:
         """
         self.coords = np.random.randint(0, sides, size=(2)).astype(float)
         self.velocity = (0, 0)
-        while self.velocity[0] * self.velocity[0] + self.velocity[1] + self.velocity[1] < 10. * 10.:
-            self.velocity = np.random.randint(-50, 50, size=(2)).astype(float)
+        if koldunov_orz == 1:
+            min_velocity = 100.
+        else:
+            min_velocity = 25.
+        while self.velocity[0] * self.velocity[0] + self.velocity[1] + self.velocity[1] < min_velocity * min_velocity:
+            self.velocity = np.random.randint(-4 * min_velocity, 4 * min_velocity, size=(2)).astype(float)
 
         self.color = color
 
@@ -102,12 +106,12 @@ class Ball:
 COLORS = [(156, 152, 47), (116, 193, 232), (232, 227, 93), (2, 2, 2), (158, 11, 26), (8, 56, 8), (14, 158, 93)]
 COLORS_N = len(COLORS)
 
-esh = 'eshutyun_gyotutyun_eshutyun'
+esh = 'eshutyun_gyotutyun_eshutyun.txt'
 def update_leaderboard(score):
     print(f'Finished. Final score {score}.')
     name = input('Enter your name to save in leaderboard: ')
     with open(esh, 'a') as file:
-        file.write(f"{name:<20}: {score}\n")
+        file.write(f"{name:<20}:\t\t{score}\n")
 
 pygame.init()
 
@@ -120,21 +124,19 @@ pygame.display.update()
 clock = pygame.time.Clock()
 gameover = False
 
-BALL_COUNT = 8
-pool = [Ball(SIDES, r=(20, 50), color=random.choice(COLORS))
-        for _ in range(BALL_COUNT)]
-pool.append(Ball(SIDES, r=(20, 30), color=random.choice(COLORS), score=69, koldunov_orz=1));
-pool.append(Ball(SIDES, r=(40, 70), color=random.choice(COLORS), score=69, koldunov_orz=1));
+ballz = [Ball(SIDES, r=(20, 50), color=random.choice(COLORS))
+        for _ in range(9)]
+ballz.append(Ball(SIDES, r=(30, 45), color=random.choice(COLORS), score=69, koldunov_orz=1));
+ballz.append(Ball(SIDES, r=(45, 75), color=random.choice(COLORS), score=69, koldunov_orz=1));
 
 score = 0
 penalty = 3
-balls_left = BALL_COUNT
 
 frames = 0
 while frames <= 25 * FPS and not gameover:
     frames += 1
     clock.tick(FPS)
-    for ball in pool:
+    for ball in ballz:
         ball.render(display)
         ball.move(4. / FPS)
         ball.collision(SIDES)
@@ -142,16 +144,15 @@ while frames <= 25 * FPS and not gameover:
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             x, y = event.pos
-            for i, ball in enumerate(pool):
+            for i, ball in enumerate(ballz):
                 d_score = ball.click(np.array([x, y]))
                 if d_score > 0:
                     score += d_score
                     ball.render(display)
                     pygame.display.update()
 
-                    balls_left -= 1
                     print(f'Կպար, քունած բուլզայ!  score: {score}')
-                    pool.pop(i)
+                    ballz.pop(i)
                     break
             else:
                 score -= penalty
@@ -162,7 +163,7 @@ while frames <= 25 * FPS and not gameover:
     pygame.display.update()
     display.fill((232, 70, 86))
 
-    if balls_left == 0:
+    if len(ballz) == 0:
         pygame.quit()
         gameover = True
         update_leaderboard(score)
