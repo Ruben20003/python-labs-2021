@@ -14,7 +14,7 @@ class Ball:
         color - tuple (R,G,B) containing color of the ball
         score - int/float/None
             if int/float is passed, then it contains the bounty of the ball.
-            if None is passed, then the score is calculated by the formula score=round(100/r).
+            if None is passed, then the score is calculated by the formula score=round(1000/r).
         koldunov_orz - int, containing 1 if self should render as Koldunov, containing 0 else.
         """
         self.coords = np.random.randint(0, sides, size=(2)).astype(float)
@@ -32,7 +32,7 @@ class Ball:
             self.r = random.uniform(r[0], r[1])
 
         if score is None:
-            self.score = np.round(30 / self.r)
+            self.score = np.round(1000 / self.r)
         else:
             self.score = score
 
@@ -126,11 +126,11 @@ gameover = False
 
 ballz = [Ball(SIDES, r=(20, 50), color=random.choice(COLORS))
         for _ in range(9)]
-ballz.append(Ball(SIDES, r=(30, 45), color=random.choice(COLORS), score=69, koldunov_orz=1));
-ballz.append(Ball(SIDES, r=(45, 75), color=random.choice(COLORS), score=69, koldunov_orz=1));
+ballz.append(Ball(SIDES, r=(30, 45), color=random.choice(COLORS), score=469, koldunov_orz=1));
+ballz.append(Ball(SIDES, r=(45, 75), color=random.choice(COLORS), score=269, koldunov_orz=1));
 
 score = 0
-penalty = 3
+penalty = math.ceil(6.9 + 0.1)
 
 frames = 0
 TIME_LENGTH = 85
@@ -167,5 +167,6 @@ while frames <= TIME_LENGTH * FPS and not gameover:
     if len(ballz) == 0:
         pygame.quit()
         gameover = True
+        score -= frames / 10.
         update_leaderboard(score)
 pygame.quit()
